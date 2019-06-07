@@ -21,6 +21,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "nextrom.c"
+#include "nextmmc.c"
+
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 // B A S I C   T Y P E S
@@ -162,7 +165,7 @@ cstr    arenaFormat         (ArenaPtr arena, cstr format, ...);
 // Index of element.
 #define arrayIndexOf(a, e) (((e) - (a)) / sizeof(*(a)))
 
-// Loop through an array an act on the elements.  Use: arrayFor(a) { a[i] = ... }
+// Loop through an array and act on the elements.  Use: arrayFor(a) { a[i] = ... }
 #define arrayFor(a) for (int i = 0; i < arrayCount(a); ++i)
 
 // Array swap
@@ -427,6 +430,78 @@ void* __arrayInternalGrow(void* a, i64 increment, i64 elemSize)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------{MEMORY}
+//----------------------------------------------------------------------------------------------------------------------
+// NEXT MEMORY SYSTEM
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Memory Map:
+//
+//      Real addresses      Size        8K bank     Description
+//      ---------------     ----        -------     -----------------------
+//      $000000-$00ffff     64K                     ZX Spectrum ROM             UNEXPANDED
+//      $010000-$013fff     16K                     EsxDOS ROM
+//      $014000-$017fff     16K                     MF ROM
+//      $018000-$01bfff     16K                     MF EXTRA ROM
+//      $01c000-$01ffff     16K                     MF RAM
+//      $020000-$03ffff     128K                    DivMMC RAM
+//      $040000-$05ffff     128K        0-15        Standard 128K RAM
+//      $060000-$07ffff     128K        16-31       Extra RAM
+//      $080000-$0fffff     512K        32-95       1st extra IC RAM
+//      -------------------------------------------------------------------
+//      $100000-$17ffff     512K        96-159      2nd extra IC RAM            EXPANDED
+//      $180000-$1fffff     512K        160-223     3rd extra IC RAM
+//
+// Total memory = $200000 (2MB)
+//
+// Memory decode order:
+//
+//      $0000-$3fff     Boot ROM
+//                      Machine config mapping
+//                      Multiface
+//                      DivMMC
+//                      Layer 2 mapping
+//                      MMU
+//                      ROMCS expansion bus
+//                      ROM
+//
+//      $4000-$bfff     Layer 2 mapping
+//                      MMU
+//
+//      $c000-$ffff     MMU mapping
+//      
+//----------------------------------------------------------------------------------------------------------------------
+
+typedef struct
+{
+    i64     offset;         // Memory offset
+    bool    readonly;       // True if ROM
+}
+MemSlot;
+
+typedef struct
+{
+    Array(u8)   bytes;          // The memory bytes
+    MemSlot     slots[8];       // The slots
+}
+Memory, *MemoryPtr;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void nxMemoryInit(MemoryPtr mem)
+{
+    arrayResize(mem->bytes, MB(2));
+    memoryCopy(nextrom_data, mem->bytes + 0x000000, KB(64));
+    memoryCopy(nextmmc_data, mem->bytes + 0x010000, KB(8));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void nxMemoryDone(MemoryPtr mem)
+{
+    arrayDone(mem->bytes);
+}
+
 //----------------------------------------------------------------------------------------------------------------------{STATE}
 //----------------------------------------------------------------------------------------------------------------------
 // E M U L A T O R   S T A T E
@@ -435,7 +510,7 @@ void* __arrayInternalGrow(void* a, i64 increment, i64 elemSize)
 
 typedef struct
 {
-    Array(u8)       memory;     // The whole memory of the Next
+    Memory      memory;     // The whole memory of the Next
 }
 State, *StatePtr;
 
@@ -447,6 +522,11 @@ State, *StatePtr;
 
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE prev, LPSTR cmdLine, int showCmd)
 {
+    Memory mem;
+
+    nxMemoryInit(&mem);
+    nxMemoryDone(&mem);
+
     return 0;
 }
 
