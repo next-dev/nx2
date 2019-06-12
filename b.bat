@@ -19,5 +19,5 @@ if not exist "_obj" mkdir "_obj"
 if not exist "_bin\debug" mkdir "_bin\debug"
 if not exist "_obj\debug" mkdir "_obj\debug"
 
-cl.exe /nologo /EHsc /c /Zi /W3 /WX /MTd /std:c++17 /Fd"_obj\debug\vc141.pdb" /Fo"_obj\debug\nx.obj" "src\nx.c" /I"src" /DWIN32 /D_DEBUG
-link.exe /nologo /OUT:"_bin\debug\nx.exe" /WX /DEBUG:FULL /PDB:"_bin\debug\bin2c.pdb" /SUBSYSTEM:WINDOWS /MACHINE:X64 "_obj\debug\nx.obj"
+cl.exe /nologo /EHsc /c /Zi /W3 /WX /MTd /std:c++17 /Fd"_obj\debug\vc141.pdb" /Fo"_obj\debug\nx.obj" "src\nx.c" /I"src" /I"kore/include" /DWIN32 /D_DEBUG
+link.exe /nologo /OUT:"_bin\debug\nx.exe" /WX /DEBUG:FULL /PDB:"_bin\debug\nx.pdb" /SUBSYSTEM:WINDOWS /MACHINE:X64 "_obj\debug\nx.obj" gdi32.lib user32.lib
