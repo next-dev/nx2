@@ -1,5 +1,5 @@
 @echo off
-call br.bat
+call mm.bat
 pushd _bin\release
 nx
 popd

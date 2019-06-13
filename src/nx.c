@@ -67,14 +67,22 @@ int kmain(int argc, char** argv)
     windowApply(&mainWnd);
 
     WindowEvent ev;
-    while (windowPoll(&ev))
+    bool quit = NO;
+    while (!quit)
     {
-
+        if (windowPoll(&ev))
+        {
+            switch(ev.type)
+            {
+            case K_EVENT_QUIT:
+                quit = YES;
+                break;
+            }
+        }
     }
 
     windowDone(&mainWnd);
     K_FREE(mainWnd.image, K_SCREEN_WIDTH * K_SCREEN_HEIGHT * sizeof(u32));
-    stringDone(&mainWnd.title);
 
     return 0;
 }

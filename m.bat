@@ -15,9 +15,7 @@ if "%VSINSTALLDIR%"=="" (
 cd /d %folder%
 
 if not exist "_bin" mkdir "_bin"
-if not exist "_obj" mkdir "_obj"
-if not exist "_bin\release" mkdir "_bin\release"
-if not exist "_obj\release" mkdir "_obj\release"
+if not exist "_bin\debug" mkdir "_bin\debug"
 
-cl.exe /nologo /EHsc /c /Zi /W3 /WX /MT /Ox /std:c++17 /Fd"_obj\release\vc141.pdb" /Fo"_obj\release\nx.obj" "src\nx.c" /I"src" /DWIN32 /DNDEBUG
-link.exe /nologo /OUT:"_bin\release\nx.exe" /WX /DEBUG:NONE /PDB:"_bin\release\nx.pdb" /SUBSYSTEM:WINDOWS /MACHINE:X64 "_obj\release\nx.obj"
+cl.exe /nologo /EHsc /c /Zi /W3 /WX /MTd /std:c++17 /Fd"_bin\debug\vc141.pdb" /Fo"_bin\debug\nx.obj" "src\nx.c" /I"src" /I"kore/include" /DWIN32 /D_DEBUG
+link.exe /nologo /OUT:"_bin\debug\nx.exe" /WX /DEBUG:FULL /PDB:"_bin\debug\nx.pdb" /SUBSYSTEM:WINDOWS /MACHINE:X64 "_bin\debug\nx.obj" gdi32.lib user32.lib
