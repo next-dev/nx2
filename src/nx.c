@@ -77,6 +77,34 @@ int kmain(int argc, char** argv)
             case K_EVENT_QUIT:
                 quit = YES;
                 break;
+
+            case K_EVENT_KEY:
+                if (keyAltPressed(&ev, KEY_1))
+                {
+                    windowUpdate(&mainWnd);
+                    mainWnd.bounds.w = 1 * K_SCREEN_WIDTH;
+                    mainWnd.bounds.h = 1 * K_SCREEN_HEIGHT;
+                    windowApply(&mainWnd);
+                }
+                else if (keyAltPressed(&ev, KEY_2))
+                {
+                    windowUpdate(&mainWnd);
+                    mainWnd.bounds.w = 2 * K_SCREEN_WIDTH;
+                    mainWnd.bounds.h = 2 * K_SCREEN_HEIGHT;
+                    windowApply(&mainWnd);
+                }
+                else if (keyAltPressed(&ev, KEY_3))
+                {
+                    windowUpdate(&mainWnd);
+                    mainWnd.bounds.w = 4 * K_SCREEN_WIDTH;
+                    mainWnd.bounds.h = 4 * K_SCREEN_HEIGHT;
+                    windowApply(&mainWnd);
+                }
+
+                if (keyPressed(&ev, KEY_ESCAPE))
+                {
+                    quit = YES;
+                }
             }
         }
     }

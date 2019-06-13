@@ -15,7 +15,7 @@
 // Visible parameters
 //----------------------------------------------------------------------------------------------------------------------
 
-#define K_VIEW_SCALE        4           // How many pixels per real pixels for window
+#define K_VIEW_SCALE        2           // How many pixels per real pixels for window
 #define K_SCREEN_WIDTH      320
 #define K_SCREEN_HEIGHT     256
 

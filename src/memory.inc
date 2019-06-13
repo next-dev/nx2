@@ -52,6 +52,15 @@ void nxMemoryInit(MemoryPtr mem)
     arrayResize(mem->bytes, K_MB(2));
     memoryCopy(nextrom_data, mem->bytes + 0x000000, K_KB(64));
     memoryCopy(nextmmc_data, mem->bytes + 0x010000, K_KB(8));
+
+    nxMemSlot(mem, 0, MEMTYPE_ZXRom, 0);
+    nxMemSlot(mem, 1, MEMTYPE_ZXRom, 1);
+    nxMemSlot(mem, 2, MEMTYPE_RAM, 10);
+    nxMemSlot(mem, 3, MEMTYPE_RAM, 11);
+    nxMemSlot(mem, 4, MEMTYPE_RAM, 4);
+    nxMemSlot(mem, 5, MEMTYPE_RAM, 5);
+    nxMemSlot(mem, 6, MEMTYPE_RAM, 0);
+    nxMemSlot(mem, 7, MEMTYPE_RAM, 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -59,6 +68,33 @@ void nxMemoryInit(MemoryPtr mem)
 void nxMemoryDone(MemoryPtr mem)
 {
     arrayDone(mem->bytes);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void nxMemSlot(MemoryPtr mem, int slot, MemType type, int page)
+{
+    K_ASSERT(K_INRANGE(slot, 0, 8));
+
+    i64 offset = 0;
+    int maxPages = 0;
+    bool readonly = NO;
+
+    switch(type)
+    {
+    case MEMTYPE_ZXRom:     offset = 0x000000; maxPages = 8;    readonly = YES;                 break;
+    case MEMTYPE_ESXDos:    offset = 0x010000; maxPages = 2;    readonly = YES;                 break;
+    case MEMTYPE_Multiface: offset = 0x014000; maxPages = 6;    readonly = K_BOOL(page < 4);    break;
+    case MEMTYPE_DivMMC:    offset = 0x020000; maxPages = 16;                                   break;
+    case MEMTYPE_RAM:       offset = 0x040000; maxPages = 224;                                  break;
+    default:
+        K_ASSERT(0);
+        offset = 0;
+    }
+
+    K_ASSERT(K_INRANGE(page, 0, 224));
+    mem->slots[slot].offset = offset + (page * K_KB(8));
+    mem->slots[slot].readonly = readonly;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

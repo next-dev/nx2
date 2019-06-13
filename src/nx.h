@@ -47,3 +47,14 @@ Memory, *MemoryPtr;
 void nxMemoryInit(MemoryPtr mem);
 void nxMemoryDone(MemoryPtr mem);
 
+typedef enum
+{
+    MEMTYPE_ZXRom,              // ZX Spectrum +3 ROM
+    MEMTYPE_ESXDos,             // ESXDos ROM
+    MEMTYPE_Multiface,          // Multiface memory
+    MEMTYPE_DivMMC,             // DivMMC memory
+    MEMTYPE_RAM,                // Normal pageable memory
+}
+MemType;
+
+void nxMemSlot(MemoryPtr mem, int slot, MemType type, int page);
